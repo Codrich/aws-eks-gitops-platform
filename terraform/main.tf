@@ -17,3 +17,11 @@ module "network" {
   project_name = var.project_name
   environment  = var.environment
 }
+
+module "eks" {
+  source             = "./modules/eks"
+  project_name       = var.project_name
+  environment        = var.environment
+  public_subnet_ids  = module.network.public_subnet_ids
+  private_subnet_ids = module.network.private_subnet_ids
+}
