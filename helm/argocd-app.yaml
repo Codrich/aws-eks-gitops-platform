@@ -1,0 +1,25 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flask-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Codrich/aws-eks-gitops-platform
+    targetRevision: HEAD
+    path: helm/flask-app
+    helm:
+      values: |
+        image:
+          repository: 533267139926.dkr.ecr.us-east-1.amazonaws.com/eks-gitops-flask
+          tag: "v1.0.0"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
