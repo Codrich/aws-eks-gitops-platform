@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: 376129869231.dkr.ecr.us-east-1.amazonaws.com/eks-gitops-flask
+  repository: 533267139926.dkr.ecr.us-east-1.amazonaws.com/eks-gitops-flask
   tag: "v1.0.0"
   pullPolicy: Always
 

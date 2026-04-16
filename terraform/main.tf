@@ -24,4 +24,6 @@ module "eks" {
   environment        = var.environment
   public_subnet_ids  = module.network.public_subnet_ids
   private_subnet_ids = module.network.private_subnet_ids
+  cluster_role_arn   = var.cluster_role_arn
+  node_role_arn      = var.node_role_arn
 }

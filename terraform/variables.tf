@@ -15,3 +15,15 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "cluster_role_arn" {
+  description = "ARN of existing IAM role for EKS cluster"
+  type        = string
+  default     = "arn:aws:iam::533267139926:role/c176450a4557385l14255774t1w533267-LabEksClusterRole-FjMBCsGKpwo7"
+}
+
+variable "node_role_arn" {
+  description = "ARN of existing IAM role for EKS nodes"
+  type        = string
+  default     = "arn:aws:iam::533267139926:role/c176450a4557385l14255774t1w533267139-LabEksNodeRole-WKUghUarw3mD"
+}
