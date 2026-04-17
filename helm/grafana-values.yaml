@@ -1,0 +1,5 @@
+﻿persistence:
+  enabled: false
+adminPassword: EKSGitOps2026
+service:
+  type: ClusterIP
