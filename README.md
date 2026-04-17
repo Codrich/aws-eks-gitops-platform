@@ -6,7 +6,7 @@ Production-grade Kubernetes platform on AWS built with Infrastructure as Code, C
 
 This project demonstrates how to design, deploy, and operate a scalable containerized application using Kubernetes on AWS.
 
-The platform provisions a secure EKS cluster using Terraform, deploys a Flask application using Helm, and automates the full deployment lifecycle using GitHub Actions.
+The platform provisions a secure EKS cluster using Terraform, deploys a Flask application using Helm, automates the full deployment lifecycle using GitHub Actions and ArgoCD, and monitors the cluster using Prometheus and Grafana.
 
 ## 🧱 Architecture
 
@@ -14,25 +14,55 @@ The platform provisions a secure EKS cluster using Terraform, deploys a Flask ap
 - Dockerized Flask application stored in ECR
 - Helm charts for Kubernetes deployment
 - GitHub Actions CI/CD pipeline (OIDC authentication)
-- Kubernetes services for internal/external exposure
+- ArgoCD for GitOps continuous delivery
+- Prometheus + Grafana for observability
+- RBAC and Network Policies for security hardening
 
 ## ⚙️ CI/CD Pipeline Flow
 
-1. Developer pushes code to GitHub  
-2. GitHub Actions builds Docker image  
-3. Image is pushed to Amazon ECR  
-4. Helm deploys the application to Amazon EKS  
-5. Kubernetes schedules pods on worker nodes  
-6. Service exposes the application  
-7. Application is accessed via port-forwarding  
+1. Developer pushes code to GitHub
+2. GitHub Actions builds Docker image
+3. Image is pushed to Amazon ECR
+4. ArgoCD detects Git changes and syncs Helm chart
+5. Kubernetes schedules pods on EKS worker nodes
+6. HPA scales pods based on CPU utilization
+7. Prometheus scrapes metrics from all pods
+8. Grafana visualizes cluster and application metrics
+9. RBAC and Network Policies enforce least-privilege access
 
 ## 🛠 Tech Stack
 
-- AWS: EKS, ECR, VPC, IAM  
-- Terraform (modular infrastructure)  
-- Helm (Kubernetes package manager)  
-- GitHub Actions (CI/CD with OIDC)  
-- Python Flask  
+- AWS: EKS, ECR, VPC, IAM
+- Terraform (modular infrastructure)
+- Helm (Kubernetes package manager)
+- GitHub Actions (CI/CD with OIDC)
+- ArgoCD (GitOps continuous delivery)
+- Prometheus + Grafana (observability)
+- Python Flask
+
+## 📁 Project Structure
+aws-eks-gitops-platform/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   └── modules/
+│       ├── network/     # VPC, subnets, NAT gateway
+│       └── eks/         # EKS cluster, node groups
+├── app/
+│   ├── app.py           # Flask application
+│   ├── requirements.txt
+│   └── Dockerfile
+├── helm/
+│   └── flask-app/       # Helm chart
+│       └── templates/
+│           ├── deployment.yaml
+│           ├── service.yaml
+│           ├── hpa.yaml
+│           ├── rbac.yaml
+│           └── networkpolicy.yaml
+└── .github/
+└── workflows/
+└── deploy.yml   # GitHub Actions pipeline
 
 ## 📸 Deployment Walkthrough
 
@@ -58,17 +88,58 @@ The platform provisions a secure EKS cluster using Terraform, deploys a Flask ap
 ### 7. Application Accessible (Port Forward)
 ![Flask App Running](docs/screenshots/flask-app-port-forward.jpg)
 
+### 8. ArgoCD GitOps Sync
+![ArgoCD](docs/screenshots/argocd-app-healthy.png)
+
+### 9. HPA Autoscaling
+![HPA](docs/screenshots/hpa-running.png)
+
+### 10. Grafana Kubernetes Dashboard
+![Grafana](docs/screenshots/grafana-k8s-dashboard.png)
+
+### 11. Container Memory Metrics
+![Grafana Memory](docs/screenshots/grafana-container-memory.png)
+
 ## 📈 Key Outcomes
 
-- Built a fully automated CI/CD pipeline for Kubernetes deployments  
-- Deployed and managed containerized workloads on AWS EKS  
-- Implemented Infrastructure as Code using Terraform  
-- Demonstrated end-to-end application lifecycle from code to deployment  
+- Built a fully automated CI/CD pipeline for Kubernetes deployments
+- Deployed and managed containerized workloads on AWS EKS
+- Implemented Infrastructure as Code using Terraform
+- Configured GitOps delivery with ArgoCD
+- Set up observability stack with Prometheus and Grafana
+- Hardened cluster security with RBAC and Network Policies
+- Demonstrated end-to-end application lifecycle from code to deployment
 
-## 🔮 Next Steps (Level 2 & 3)
+## ⚠️ Known Limitations (Learner Lab Environment)
 
-- GitOps deployment with ArgoCD  
-- Ingress controller for external access  
-- Horizontal Pod Autoscaling (HPA)  
-- Prometheus & Grafana monitoring  
-- RBAC and Kubernetes security hardening  
+- **Ingress / ALB Integration**
+  The AWS Load Balancer Controller requires IRSA (IAM Roles for Service
+  Accounts) and `elasticloadbalancing:*` permissions. The Vocareum Learner
+  Lab restricts IAM role creation and policy attachment, preventing ALB
+  provisioning. The Ingress manifests are fully implemented and
+  production-ready for a standard AWS account.
+
+- **GitHub Actions OIDC Integration**
+  OIDC federation requires `iam:CreateRole`, which is restricted in the
+  lab environment. The workflow configuration is included and
+  production-ready.
+
+## 💰 Cost Awareness
+
+| Resource | Cost/hour | Notes |
+|---|---|---|
+| EKS Control Plane | $0.10 | Destroy when not in use |
+| t3.small node (1x) | $0.023 | Destroy when not in use |
+| NAT Gateway | $0.045 | Destroy when not in use |
+| **Total** | **~$0.17/hr** | |
+
+Always run `terraform destroy` after each session.
+
+## 🔧 Troubleshooting
+
+| Issue | Cause | Fix |
+|---|---|---|
+| `ErrImagePull` | Wrong ECR account ID | Update repository URL in values.yaml |
+| Node group CREATE_FAILED | EC2 vCPU quota too low | Request quota increase |
+| Pods Pending | Node at pod limit (11 for t3.small) | Remove unused deployments |
+| ALB not provisioning | Missing IRSA configuration | Requires full AWS account |
