@@ -1,12 +1,23 @@
 # AWS EKS GitOps Platform
 
-Production-grade Kubernetes platform on AWS built with Infrastructure as Code, CI/CD automation, and GitOps principles.
+> A production-style Kubernetes platform demonstrating real-world DevOps, GitOps, and cloud-native engineering practices on AWS.
 
 ## 🚀 Overview
 
-This project demonstrates how to design, deploy, and operate a scalable containerized application using Kubernetes on AWS.
+This project provisions a secure EKS cluster using Terraform, deploys a containerized Flask application using Helm, automates the full deployment lifecycle using GitHub Actions and ArgoCD, and monitors the cluster using Prometheus and Grafana — demonstrating a complete, production-style cloud-native platform.
 
-The platform provisions a secure EKS cluster using Terraform, deploys a Flask application using Helm, automates the full deployment lifecycle using GitHub Actions and ArgoCD, and monitors the cluster using Prometheus and Grafana.
+## 🎯 What This Project Demonstrates
+
+- End-to-end Kubernetes platform deployment on AWS using Infrastructure as Code
+- GitOps-based continuous delivery with ArgoCD
+- Secure CI/CD pipeline using GitHub Actions with OIDC (no static credentials)
+- Observability and monitoring with Prometheus and Grafana
+- Kubernetes security hardening using RBAC and Network Policies
+- Production-style architecture design and operational awareness
+
+## 🧭 Architecture Diagram
+
+![Architecture](docs/architecture.png)
 
 ## 🧱 Architecture
 
@@ -32,13 +43,17 @@ The platform provisions a secure EKS cluster using Terraform, deploys a Flask ap
 
 ## 🛠 Tech Stack
 
-- AWS: EKS, ECR, VPC, IAM
-- Terraform (modular infrastructure)
-- Helm (Kubernetes package manager)
-- GitHub Actions (CI/CD with OIDC)
-- ArgoCD (GitOps continuous delivery)
-- Prometheus + Grafana (observability)
-- Python Flask
+| Layer | Technology |
+|---|---|
+| Cloud | AWS (EKS, ECR, VPC, IAM) |
+| Infrastructure as Code | Terraform (modular) |
+| Container Orchestration | Kubernetes 1.31 |
+| Package Manager | Helm |
+| GitOps | ArgoCD |
+| CI/CD | GitHub Actions (OIDC) |
+| Observability | Prometheus + Grafana |
+| Security | RBAC + Network Policies |
+| Application | Python Flask |
 
 ## 📁 Project Structure
 aws-eks-gitops-platform/
@@ -46,14 +61,14 @@ aws-eks-gitops-platform/
 │   ├── main.tf
 │   ├── variables.tf
 │   └── modules/
-│       ├── network/     # VPC, subnets, NAT gateway
-│       └── eks/         # EKS cluster, node groups
+│       ├── network/          # VPC, subnets, NAT gateway
+│       └── eks/              # EKS cluster, node groups
 ├── app/
-│   ├── app.py           # Flask application
+│   ├── app.py                # Flask application
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── helm/
-│   └── flask-app/       # Helm chart
+│   └── flask-app/            # Helm chart
 │       └── templates/
 │           ├── deployment.yaml
 │           ├── service.yaml
@@ -62,7 +77,7 @@ aws-eks-gitops-platform/
 │           └── networkpolicy.yaml
 └── .github/
 └── workflows/
-└── deploy.yml   # GitHub Actions pipeline
+└── deploy.yml        # GitHub Actions pipeline
 
 ## 📸 Deployment Walkthrough
 
@@ -104,11 +119,13 @@ aws-eks-gitops-platform/
 
 - Built a fully automated CI/CD pipeline for Kubernetes deployments
 - Deployed and managed containerized workloads on AWS EKS
-- Implemented Infrastructure as Code using Terraform
-- Configured GitOps delivery with ArgoCD
-- Set up observability stack with Prometheus and Grafana
+- Implemented Infrastructure as Code using modular Terraform
+- Configured GitOps continuous delivery with ArgoCD
+- Set up full observability stack with Prometheus and Grafana
 - Hardened cluster security with RBAC and Network Policies
-- Demonstrated end-to-end application lifecycle from code to deployment
+- Demonstrated end-to-end application lifecycle from code to running container
+
+> This project proves the ability to design, deploy, and operate a production-style cloud-native platform on AWS — independently, from scratch.
 
 ## ⚠️ Known Limitations (Learner Lab Environment)
 
@@ -140,6 +157,6 @@ Always run `terraform destroy` after each session.
 | Issue | Cause | Fix |
 |---|---|---|
 | `ErrImagePull` | Wrong ECR account ID | Update repository URL in values.yaml |
-| Node group CREATE_FAILED | EC2 vCPU quota too low | Request quota increase |
+| Node group `CREATE_FAILED` | EC2 vCPU quota too low | Request quota increase |
 | Pods Pending | Node at pod limit (11 for t3.small) | Remove unused deployments |
 | ALB not provisioning | Missing IRSA configuration | Requires full AWS account |
